@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import Hero from './components/Hero';
+import Highlights from './components/Highlights';
+import Navbar from './components/Navbar';
 
 const App = () => {
 
@@ -6,7 +8,9 @@ const App = () => {
   return (
 
     <main>
-
+      <Navbar />
+      <Hero />
+      <Highlights />
     </main>
 
   )
