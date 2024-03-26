@@ -5,6 +5,7 @@ import { heroVideo, smallHeroVideo } from "../utils";
 
 const Hero = () => {
 
+    // ! Video handle
     const [videoSrc, setVideoSrc] = useState(window.innerWidth < 760 ? smallHeroVideo : heroVideo);
 
     const handleVideoSrcSet = () => {
@@ -23,12 +24,26 @@ const Hero = () => {
         }
     }, []);
 
+
+
+    // ! Animate text
     useGSAP(() => {
         gsap.to('#hero', {
             opacity: 1,
-            delay: 1.5
+            delay: 2.5
         });
     }, []);
+
+    useGSAP(() => {
+        gsap.to('#cta', {
+            opacity: 1,
+            delay: 2.5,
+            y: -50
+        });
+    }, []);
+
+
+
 
     return (
         <section className="bg-black w-full nav-height relative">
@@ -41,6 +56,11 @@ const Hero = () => {
                         <source src={videoSrc} type='video/mp4' />
                     </video>
                 </div>
+            </div>
+
+            <div id='cta' className='flex flex-col items-center opacity-0 translate-y-20'>
+                <a href="#highlights" className='btn'>Acheter</a>
+                <p className='font-normal text-xl'>A partir de 299€/mois ou 999€</p>
             </div>
 
         </section>
