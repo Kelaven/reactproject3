@@ -26,10 +26,10 @@ const VideoCarousel = () => {
         isLastVideo: false, // Vérifie si c'est la dernière vidéo
         isPlaying: false // Vérifie si la vidéo est en cours de lecture
     });
+    const { isEnd, startPlay, videoId, isLastVideo, isPlaying } = video; // pour éviter d'avoir a écrire video.clé à chaque fois, destructuring
 
     const [loadedData, setLoadedData] = useState([]);
 
-    const { isEnd, startPlay, videoId, isLastVideo, isPlaying } = video; // pour éviter d'avoir a écrire video.clé à chaque fois 
 
 
 
@@ -56,8 +56,8 @@ const VideoCarousel = () => {
                 videoRef.current[videoId].pause(); // Met en pause la vidéo actuelle si elle est en train de jouer
                 // videoRef: C'est la référence créée à l'aide de useRef().
                 // .current: C'est une propriété de l'objet de référence. Elle contient la valeur actuelle de la référence, qui est l'élément du DOM auquel la référence est attachée.
-                // Lorsque l'on fait videoRef.current[videoId].pause(), in accède à l'élément vidéo spécifique dans le tableau de références qui correspond à l'ID de la vidéo actuelle, et on appelle la méthode .pause() de cet élément vidéo pour le mettre en pause. 
-                // En bref, permet de contrôler directement la lecture des éléments vidéo dans votre composant React en fonction de l'état ou des interactions de l'utilisateur.
+                // Lorsque l'on fait videoRef.current[videoId].pause(), on accède à l'élément vidéo spécifique dans le tableau de références qui correspond à l'ID de la vidéo actuelle, et on appelle la méthode .pause() de cet élément vidéo pour le mettre en pause. 
+                // En bref, ça permet de contrôler directement la lecture des éléments vidéo dans notre composant en fonction de l'état ou des interactions de l'utilisateur.
             } else {
                 startPlay && videoRef.current[videoId].play(); // Joue la vidéo actuelle si l'état startPlay est vrai
             }
@@ -94,8 +94,7 @@ const VideoCarousel = () => {
 
     ////////////////// ! FONCTIONS ! //////////////////
 
-    // La méthode handleProcess est utilisée pour gérer différents types d'événements liés à la lecture vidéo (comme fin de vidéo, lecture, pause, etc.), et elle met à jour l'état du composant en conséquence.
-    // Les interactions utilisateur avec les éléments de contrôle (boutons play, pause, etc.) sont gérées à travers des fonctions comme handleProcess qui ajustent l'état local basé sur l'action.
+    // La fonction handleProcess est utilisée pour gérer différents types d'événements liés à la lecture vidéo (comme fin de vidéo, lecture, pause, etc.), et elle met à jour l'état du composant en conséquence.
     const handleProcess = (type, index) => {
         switch (type) {
             case 'video-end':
@@ -118,11 +117,17 @@ const VideoCarousel = () => {
             case 'play':
                 // Bascule l'état de lecture de la vidéo
                 setVideo((pre) => ({ ...pre, isPlaying: !pre.isPlaying }));
+                // isPlaying: !pre.isPlaying : Cette partie de l'objet mis à jour inverse la valeur actuelle de isPlaying dans l'état video. 
+                // Si isPlaying était true, il deviendra false, et vice-versa (toggle). 
+                // Cela est souvent utilisé pour des fonctionnalités de type interrupteur (on/off) comme jouer ou mettre en pause une vidéo.
+                // En résumé, setVideo((pre) => ({ ...pre, isPlaying: !pre.isPlaying })); est une manière de dire : 
+                // "Prends l'état actuel de video, conserve toutes ses propriétés actuelles, mais inverse la valeur de isPlaying". 
+                // Cela permet de mettre à jour l'état de manière prévisible sans affecter d'autres valeurs d'état qui ne doivent pas changer.
+                // Si pre.isPlaying est actuellement true : signifie que la vidéo est en train de jouer.
                 break;
             default:
                 // Ne change rien si le type d'action n'est pas reconnu
                 return video;
-                break;
 
             // Dans le cadre du switch, la logique est utilisée pour gérer différents cas (comme 'video-end', 'video-last', etc.) en fonction des actions de l'utilisateur ou des événements dans l'application. 
             // À chaque fois, on prend l'état actuel de video, on conserve toutes ses propriétés, et on modifie uniquement les propriétés nécessaires en fonction de l'action en cours.
@@ -138,7 +143,7 @@ const VideoCarousel = () => {
 
     return (
         <>
-            <div className='flex items-center'>
+            <div className='flex items-center'> {/* conteneur pour le carrousel complet */}
                 {hightlightsSlides.map((list, index) => ( // si je mets des paranthèses et non accodales, le return se fait immédiatement
                     <div key={list.id} className='slider sm:pr-20 pr-10'>
                         <div className='video-carousel_container'>
@@ -178,11 +183,11 @@ const VideoCarousel = () => {
                         <span
                             key={index}
                             ref={(el) => (videoDivRef.current[index] = el)} // Référence pour les indicateurs de progression
-                            className='mx-2 w-3 h-3 bg-gray-200 rounded-full relative cursor-pointer'
+                            className='mx-2 w-3 h-3 bg-gray-200 rounded-full relative cursor-pointer' // donc ce sont les ronds sur lesquels on clique
                         >
                             <span
                                 className='absolute h-full w-full rounded-full'
-                                ref={(el) => (videoSpanRef.current[index] = el)} // Référence pour la barre de progression de la vidéo
+                                ref={(el) => (videoSpanRef.current[index] = el)} // Référence pour la barre de progression de la vidéo, le rond qui se transformera en barre de progression dynamique
                             />
                         </span>
                         // La structure avec les deux <span> imbriqués est utilisée pour créer des indicateurs pour chaque vidéo dans le carrousel. 
@@ -248,3 +253,22 @@ export default VideoCarousel;
 // L'état 'video' est un objet contenant plusieurs propriétés liées à l'état de la lecture vidéo. Dans ce cas, le spread operator (...) est utilisé pour conserver toutes les propriétés actuelles 
 // de l'état 'video' tout en mettant à jour la propriété 'isPlaying' pour refléter que la vidéo est désormais en cours de lecture. Cela assure que nous ne remplaçons pas l'ensemble de l'objet d'état 
 // mais seulement modifions la valeur nécessaire tout en conservant les autres valeurs intactes.
+
+
+// ? La fonction callback :
+// Une fonction callback est une fonction passée à une autre fonction en tant qu'argument, qui est ensuite invoquée à l'intérieur de la fonction externe pour compléter une sorte de routine ou d'action.
+// En d'autres termes, une fonction callback est une fonction que l'on fourni à une autre fonction pour qu'elle soit appelée (ou "rappelée") ultérieurement.
+
+// Exemple : 
+// function greeting(name) {
+//     alert(`Bonjour ${name}`);
+//   }
+
+//   function processUserInput(callback) {
+//     const name = prompt('Veuillez entrer votre nom.');
+//     callback(name);
+//   }
+
+//   processUserInput(greeting);
+
+// Ici, greeting est une fonction callback. Nous la passons à la fonction processUserInput. Lorsque l'utilisateur saisit son nom, processUserInput appelle greeting en lui passant le nom de l'utilisateur.
