@@ -2,9 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { hightlightsSlides } from '../constants';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { ScrollTrigger } from "gsap/all";
 import { pauseImg, playImg, replayImg } from '../utils';
 
-
+gsap.registerPlugin(ScrollTrigger);
 
 
 
@@ -33,18 +34,27 @@ const VideoCarousel = () => {
 
 
 
-    ////////////////// ! ANIMATION ! //////////////////
+    ////////////////// ! ANIMATIONS ! //////////////////
 
     useGSAP(() => {
         gsap.to('.video', {
-            // x: 250,
-            // repeat: -1
+            scrollTrigger: {
+                trigger: '.video',
+                toggleActions: 'restart none none none'
+            },
+            onComplete: () => { // on utilise une fonction callback, qui fera donc ce qu'on lui demande quand l'animation GSAP sera terminée
+                setVideo((pre) => ({
+                    ...pre, // on récupère les propriétés de base
+                    startPlay: true, // on modifie celles que l'on souhaite
+                    isPlaying: true
+                }))
+            }
         });
     }, [isEnd, videoId]);
 
 
 
-    ////////////////// ! EFETS ! //////////////////
+    ////////////////// ! EFFETS ! //////////////////
 
     // Les effets (useEffect) sont utilisés pour effectuer des effets secondaires dans les composants fonctionnels. 
     // Ici, ils sont utilisés pour mettre en pause ou jouer des vidéos basées sur l'état du composant.
@@ -52,6 +62,7 @@ const VideoCarousel = () => {
         if (loadedData.length > 3) { // vérifie si le tableau loadedData contient plus de trois éléments. 
             // Dans le contexte d'un carrousel de vidéos, cette condition est utilisée pour s'assurer que toutes les vidéos (ou du moins un certain nombre minimal attendu) ont bien été chargées avant d'essayer de les jouer ou de les mettre en pause.
             // Cela peut aider à éviter des erreurs, comme essayer d'accéder à une vidéo qui n'a pas encore été chargée, ce qui pourrait entraîner des bugs ou des comportements imprévus.
+            // C'est donc utilisé de pair avec la fonction handleLoadedMetadata qui s'assure, notamment grâce à la fonction dans le JSX, que toutes les métadonnées des vidéos sont bien chargées.
             if (!isPlaying) { // Contrôle de la vidéo basée sur l'état de lecture
                 videoRef.current[videoId].pause(); // Met en pause la vidéo actuelle si elle est en train de jouer
                 // videoRef: C'est la référence créée à l'aide de useRef().
@@ -69,24 +80,52 @@ const VideoCarousel = () => {
 
 
     useEffect(() => {
-        const currentProgress = 0;
-        let span = videoSpanRef.current;
-
-        if (span[videoId]) {
-            // animer la progression de la vidéo
-            let anim = gsap.to(span[videoId], {
+        let currentProgress = 0;
+        let span = videoSpanRef.current; // récupère la référence de tous les éléments span créés pour les indicateurs de progression de chaque vidéo.
+        // Ces éléments span sont stockés dans videoSpanRef, qui est un tableau de références aux éléments DOM (en l'occurrence, des éléments span) grâce à useRef([]).
+        if (span[videoId]) { // fait référence à l'élément span spécifique qui correspond à la vidéo actuellement indiquée par videoId. 
+            let anim = gsap.to(span[videoId], { // animer la progression de la vidéo
                 onUpdate: () => {
+                    const progress = Math.ceil(anim.progress() * 100); // permet de connaître la progression de l'animation, on multiplie par 100 pour l'obtenir en %.
+                    if (progress != currentProgress) {
+                        currentProgress = progress;
 
+                        gsap.to(videoDivRef.current[videoId], { // on fait référence au point du carrousel de la vidéo lue
+                            width: window.innerWidth < 1200 ? '10vw' : '4vw' // on lui modifie sa largeur (1200 pour aller jusqu'au format tablette)
+                        })
+                        gsap.to(span[videoId], { // changer dynamiquement la couleur dans la barre avec de la progression de la vidéo
+                            width: `${currentProgress}%`,
+                            backgroundColor: 'white'
+                        })
+                    }
                 },
-                onComplete: () => {
-
+                onComplete: () => { // quand la vidéo est lue
+                    if (isPlaying) { // la barre de progression doit reprendre sa forme de rond initiale
+                        gsap.to(videoDivRef.current[videoId], {
+                            width: '12px'
+                        })
+                        gsap.to(span[videoId], {
+                            backgroundColor: '#afafaf'
+                        })
+                    }
                 }
-
             })
+            if (videoId === 0) {
+                anim.restart();
+            }
+
+            const animUpdate = () => {
+                anim.progress(videoRef.current[videoId] / hightlightsSlides[videoId].videoDuration)
+            }
+
+            if (isPlaying) {
+                gsap.ticker.add(animUpdate)
+            } else {
+                gsap.ticker.remove(animUpdate)
+            }
         }
 
         return () => {
-
         }
     }, [videoId, startPlay]) // on aura besoin de rappeler useEffect quand le videoId ou le startPlay changera 
 
@@ -135,6 +174,12 @@ const VideoCarousel = () => {
         }
     }
 
+    const handleLoadedMetadata = (index, event) => setLoadedData((pre) => [...pre, event]);
+    // index est l'index de la vidéo actuelle dans le carrousel
+    // event se déclenche quand les métadonnées (comme la durée et les dimensions de la vidéo) ont été chargées
+    // La fonction handleLoadedMetadata met ensuite à jour l'état loadedData à l'aide de la fonction setLoadedData. 
+    // Ce faisant, elle prend l'état précédent de loadedData (noté pre ici), copie toutes les données déjà présentes avec l'opérateur spread, et ajoute le nouvel objet d'événement event à la fin du tableau. 
+    // Cela permet de conserver un enregistrement des événements de métadonnées chargées pour chaque vidéo.
 
 
 
@@ -154,11 +199,19 @@ const VideoCarousel = () => {
                                     preload='auto'
                                     muted
                                     ref={(el) => (videoRef.current[index] = el)} // Crée une référence pour chaque vidéo / DETAIL EN MEMO
+                                    onEnded={() => // se déclenche quand la lecture d'une vidéo est terminée
+                                        index !== 3 // vérifie si l'index de la vidéo actuelle n'est pas 3 (ce qui correspond à la derniere video)
+                                        ? handleProcess('video-end', index) // si ce n'est pas le cas, cela signifie que la vidéo actuelle n'est pas la dernière de la liste
+                                        : handleProcess('video-last') // sinon, si l'index est 3, cela signifie que c'est la dernière vidéo de la liste
+                                        // Rappel : 'video-last' est utilisé pour gérer la fin du carrousel de vidéos, en réinitialisant le carrousel à la première vidéo
+                                    }
                                     onPlay={() => { // Met à jour l'état lorsque la vidéo commence à jouer / DETAIL EN MEMO
                                         setVideo((prevVideo) => ({
                                             ...prevVideo, isPlaying: true
                                         }))
                                     }}
+                                    onLoadedMetadata={(event) => handleLoadedMetadata(index, event)}
+                                // En passant event et index à handleLoadedMetadata, on lie chaque vidéo à sa position dans le carrousel et enregistre l'événement de chargement des métadonnées dans notre état loadedData. 
                                 >
                                     <source src={list.video} type='video/mp4' />
                                 </video>
@@ -178,8 +231,8 @@ const VideoCarousel = () => {
             <div className='relative flex-center mt-10'> {/* conteneur principal pour les indicateurs de vidéo et le bouton de contrôle. */}
                 <div className='flex-center py-5 px-7 bg-gray-300 backdrop-blur rounded-full'>
                     {videoRef.current.map((_, index) => ( /* Affiche des indicateurs pour chaque vidéo */
-                    // le _ est un placeholder pour le premier paramètre de la fonction map, qui serait normalement l'élément actuel du tableau lors de l'itération. 
-                    // Quand on n'a pas besoin de cet élément dans la fonction, utiliser _ est une convention qui indique que ce paramètre est ignoré. 
+                        // le _ est un placeholder pour le premier paramètre de la fonction map, qui serait normalement l'élément actuel du tableau lors de l'itération. 
+                        // Quand on n'a pas besoin de cet élément dans la fonction, utiliser _ est une convention qui indique que ce paramètre est ignoré. 
                         <span
                             key={index}
                             ref={(el) => (videoDivRef.current[index] = el)} // Référence pour les indicateurs de progression
@@ -203,7 +256,7 @@ const VideoCarousel = () => {
                         src={isLastVideo ? replayImg : !isPlaying ? playImg : pauseImg}
                         alt={isLastVideo ? "logo rejouer" : !isPlaying ? "logo jouer" : "logo pause"}
                         onClick={isLastVideo ? () => handleProcess('video-reset') : !isPlaying ? () => handleProcess('play') : () => handleProcess('pause')}
-                        // Le onClick sur l'image gère la logique de changement d'état pour jouer, mettre en pause ou réinitialiser la vidéo en fonction de l'état actuel de la lecture vidéo.
+                    // Le onClick sur l'image gère la logique de changement d'état pour jouer, mettre en pause ou réinitialiser la vidéo en fonction de l'état actuel de la lecture vidéo.
                     />
                 </button>
             </div>
