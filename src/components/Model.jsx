@@ -100,15 +100,23 @@ const Model = () => {
                                 ))}
                             </ul>
                             <button className='size-btn-container'> {/* pour choisir la taille du téléphone */}
-                                    {sizes.map(({label, value}) => (
+                                {sizes.map(({ label, value }) => (
                                     // Normalement, map recevrait un objet complet comme argument : sizes.map(size => { ... });
                                     // Mais au lieu de cela, on utilise la déstructuration d'objet dans les arguments de la fonction : sizes.map(({label, value}) => { ... });
                                     // Cela permet d'accéder directement à label et value à l'intérieur de la fonction sans avoir à faire référence à l'objet original. 
                                     // C'est un moyen plus propre et plus direct d'accéder aux propriétés des objets lorsque l'on sait quelles propriétés on a besoin d'utiliser.
-                                        <span key={label}>
-                                            {label}
-                                        </span>
-                                    ))}
+                                    <span
+                                        key={label}
+                                        className='size-btn'
+                                        style={{
+                                            backgroundColor: size === value ? 'white' : 'transparent', // size est la constante définie avec useState. Donc si value est small, alors le bg est white sinon transparent
+                                            color: size === value ? 'black' : 'white'
+                                        }}
+                                        onClick={() => setSize(value)}
+                                    >
+                                        {label}
+                                    </span>
+                                ))}
                             </button>
                         </div>
                     </div>
