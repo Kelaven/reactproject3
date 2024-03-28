@@ -37,6 +37,16 @@ const VideoCarousel = () => {
     ////////////////// ! ANIMATIONS ! //////////////////
 
     useGSAP(() => {
+
+
+        gsap.to('.slider', {
+            transform: `translateX(${-100 * videoId}%)`, // déplacement multiplié par la durée de la vidéo
+            duration: 2,
+            ease: 'power2.inOut'
+        })
+
+
+
         gsap.to('.video', {
             scrollTrigger: {
                 trigger: '.video',
@@ -110,16 +120,22 @@ const VideoCarousel = () => {
                     }
                 }
             })
+
             if (videoId === 0) {
-                anim.restart();
+                anim.restart(); // réinitialiser l'état de l'animation lorsque l'utilisateur revient à la 1ere vidéo après avoir navigué dans le carousel
             }
 
             const animUpdate = () => {
-                anim.progress(videoRef.current[videoId] / hightlightsSlides[videoId].videoDuration)
+                anim.progress(videoRef.current[videoId].currentTime / hightlightsSlides[videoId].videoDuration) // La méthode .currentTime est une propriété des éléments HTML <video> et <audio> dans le DOM HTML5. Elle est utilisée pour obtenir ou définir la position de lecture actuelle dans la vidéo ou l'audio, exprimée en secondes.
+                // Fonction de mise à jour pour l'animation qui ajuste la progression de l'animation (anim.progress) 
+                // basée sur le ratio du temps actuel de lecture de la vidéo (currentTime) par rapport à la durée totale de la vidéo (videoDuration). 
+                // Cela permet de synchroniser l'animation avec la lecture de la vidéo, en faisant en sorte que la progression de l'animation reflète le pourcentage de la vidéo qui a été lu.
             }
 
             if (isPlaying) {
+            // Ces lignes utilisent le ticker de GSAP, un mécanisme qui exécute une fonction de mise à jour (animUpdate dans ce cas) à chaque fois que le navigateur est prêt à rendre une nouvelle frame d'animation.
                 gsap.ticker.add(animUpdate)
+                // Si la vidéo est en cours de lecture, la fonction animUpdate est ajoutée au ticker de GSAP pour être exécutée régulièrement, permettant ainsi une mise à jour fluide de l'animation en fonction de la lecture de la vidéo.
             } else {
                 gsap.ticker.remove(animUpdate)
             }
@@ -164,6 +180,9 @@ const VideoCarousel = () => {
                 // Cela permet de mettre à jour l'état de manière prévisible sans affecter d'autres valeurs d'état qui ne doivent pas changer.
                 // Si pre.isPlaying est actuellement true : signifie que la vidéo est en train de jouer.
                 break;
+            case 'pause':
+                setVideo((pre) => ({ ...pre, isPlaying: !pre.isPlaying }));
+                break;
             default:
                 // Ne change rien si le type d'action n'est pas reconnu
                 return video;
@@ -194,7 +213,8 @@ const VideoCarousel = () => {
                         <div className='video-carousel_container'>
                             <div className='w-full h-full flex-center rounded-3xl overflow-hidden bg-black'>
                                 <video
-                                    className='video'
+                                    // className='video'
+                                    className={`${ list.id === 2 && 'translate-x-44'} pointer-events-none video`}
                                     playsInline={true}
                                     preload='auto'
                                     muted
