@@ -15,14 +15,14 @@ body {
   height: 100%;
   background: #000;
   border-color: #3b3b3b;
-  user-select: none;
+  user-select: none; /* empêcher les utilisateurs de sélectionner du texte ou d'autres éléments */
 }
 
 canvas {
   touch-action: none;
 }
 
-.screen-max-width {
+.screen-max-width { /* styliser un élément afin qu'il soit centré horizontalement dans son conteneur parent et ait une largeur maximale de 1120 pixels. */
   margin-inline-start: auto;
   margin-inline-end: auto;
   position: relative;
