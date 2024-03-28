@@ -12,7 +12,7 @@ gsap.registerPlugin(ScrollTrigger);
 const VideoCarousel = () => {
 
 
-    ////////////////// ! VARIABLES ! //////////////////
+    ////////////////// ! REFERENCES ET ETAT ! //////////////////
 
     // useRef est un Hook qui permet de conserver des références sur les éléments du DOM et les valeurs à travers les re-renders du composant. 
     // useRef est initialisé avec un tableau vide car on envisage de stocker les références de plusieurs éléments vidéo.
@@ -34,20 +34,17 @@ const VideoCarousel = () => {
 
 
 
-    ////////////////// ! ANIMATIONS ! //////////////////
+    ////////////////// ! ANIMATIONS GSAP ! //////////////////
 
     useGSAP(() => {
 
-
-        gsap.to('.slider', {
+        gsap.to('.slider', { // * animer le déplacement horizontal des vidéos
             transform: `translateX(${-100 * videoId}%)`, // déplacement multiplié par la durée de la vidéo
             duration: 2,
             ease: 'power2.inOut'
         })
 
-
-
-        gsap.to('.video', {
+        gsap.to('.video', { // * démarrer l'animation au scroll
             scrollTrigger: {
                 trigger: '.video',
                 toggleActions: 'restart none none none'
@@ -67,8 +64,7 @@ const VideoCarousel = () => {
     ////////////////// ! EFFETS ! //////////////////
 
     // Les effets (useEffect) sont utilisés pour effectuer des effets secondaires dans les composants fonctionnels. 
-    // Ici, ils sont utilisés pour mettre en pause ou jouer des vidéos basées sur l'état du composant.
-    useEffect(() => { // Gestion de la lecture et de la pause des vidéos
+    useEffect(() => { // * Gestion de la lecture et de la pause des vidéos
         if (loadedData.length > 3) { // vérifie si le tableau loadedData contient plus de trois éléments. 
             // Dans le contexte d'un carrousel de vidéos, cette condition est utilisée pour s'assurer que toutes les vidéos (ou du moins un certain nombre minimal attendu) ont bien été chargées avant d'essayer de les jouer ou de les mettre en pause.
             // Cela peut aider à éviter des erreurs, comme essayer d'accéder à une vidéo qui n'a pas encore été chargée, ce qui pourrait entraîner des bugs ou des comportements imprévus.
@@ -89,7 +85,7 @@ const VideoCarousel = () => {
     }, [startPlay, videoId, isPlaying, loadedData]); // Réexécute l'effet si ces valeurs changent
 
 
-    useEffect(() => {
+    useEffect(() => { // * Mise à jour de la progression de l'animation basée sur la lecture de la vidéo
         let currentProgress = 0;
         let span = videoSpanRef.current; // récupère la référence de tous les éléments span créés pour les indicateurs de progression de chaque vidéo.
         // Ces éléments span sont stockés dans videoSpanRef, qui est un tableau de références aux éléments DOM (en l'occurrence, des éléments span) grâce à useRef([]).
@@ -149,8 +145,7 @@ const VideoCarousel = () => {
 
     ////////////////// ! FONCTIONS ! //////////////////
 
-    // La fonction handleProcess est utilisée pour gérer différents types d'événements liés à la lecture vidéo (comme fin de vidéo, lecture, pause, etc.), et elle met à jour l'état du composant en conséquence.
-    const handleProcess = (type, index) => {
+    const handleProcess = (type, index) => { // * gérer différents types d'événements liés à la lecture vidéo (comme fin de vidéo, lecture, pause, etc.), la fonction met à jour l'état du composant en conséquence.
         switch (type) {
             case 'video-end':
                 // Marque la vidéo comme terminée et passe à la vidéo suivante
@@ -203,7 +198,7 @@ const VideoCarousel = () => {
 
 
 
-    ////////////////// ! RETURN ! //////////////////
+    ////////////////// ! RENDU DU COMPOSANT ! //////////////////
 
     return (
         <>
