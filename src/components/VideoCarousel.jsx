@@ -122,14 +122,17 @@ const VideoCarousel = () => {
             }
 
             const animUpdate = () => {
-                anim.progress(videoRef.current[videoId].currentTime / hightlightsSlides[videoId].videoDuration) // La méthode .currentTime est une propriété des éléments HTML <video> et <audio> dans le DOM HTML5. Elle est utilisée pour obtenir ou définir la position de lecture actuelle dans la vidéo ou l'audio, exprimée en secondes.
+                anim.progress(
+                    videoRef.current[videoId].currentTime /
+                    hightlightsSlides[videoId].videoDuration
+                ) // La méthode .currentTime est une propriété des éléments HTML <video> et <audio> dans le DOM HTML5. Elle est utilisée pour obtenir ou définir la position de lecture actuelle dans la vidéo ou l'audio, exprimée en secondes.
                 // Fonction de mise à jour pour l'animation qui ajuste la progression de l'animation (anim.progress) 
                 // basée sur le ratio du temps actuel de lecture de la vidéo (currentTime) par rapport à la durée totale de la vidéo (videoDuration). 
                 // Cela permet de synchroniser l'animation avec la lecture de la vidéo, en faisant en sorte que la progression de l'animation reflète le pourcentage de la vidéo qui a été lu.
             }
 
             if (isPlaying) {
-            // Ces lignes utilisent le ticker de GSAP, un mécanisme qui exécute une fonction de mise à jour (animUpdate dans ce cas) à chaque fois que le navigateur est prêt à rendre une nouvelle frame d'animation.
+                // Ces lignes utilisent le ticker de GSAP, un mécanisme qui exécute une fonction de mise à jour (animUpdate dans ce cas) à chaque fois que le navigateur est prêt à rendre une nouvelle frame d'animation.
                 gsap.ticker.add(animUpdate)
                 // Si la vidéo est en cours de lecture, la fonction animUpdate est ajoutée au ticker de GSAP pour être exécutée régulièrement, permettant ainsi une mise à jour fluide de l'animation en fonction de la lecture de la vidéo.
             } else {
@@ -209,15 +212,15 @@ const VideoCarousel = () => {
                             <div className='w-full h-full flex-center rounded-3xl overflow-hidden bg-black'>
                                 <video
                                     // className='video'
-                                    className={`${ list.id === 2 && 'translate-x-44'} pointer-events-none video`}
+                                    className={`${list.id === 2 && 'translate-x-44'} pointer-events-none video`}
                                     playsInline={true}
                                     preload='auto'
                                     muted
                                     ref={(el) => (videoRef.current[index] = el)} // Crée une référence pour chaque vidéo / DETAIL EN MEMO
                                     onEnded={() => // se déclenche quand la lecture d'une vidéo est terminée
                                         index !== 3 // vérifie si l'index de la vidéo actuelle n'est pas 3 (ce qui correspond à la derniere video)
-                                        ? handleProcess('video-end', index) // si ce n'est pas le cas, cela signifie que la vidéo actuelle n'est pas la dernière de la liste
-                                        : handleProcess('video-last') // sinon, si l'index est 3, cela signifie que c'est la dernière vidéo de la liste
+                                            ? handleProcess('video-end', index) // si ce n'est pas le cas, cela signifie que la vidéo actuelle n'est pas la dernière de la liste
+                                            : handleProcess('video-last') // sinon, si l'index est 3, cela signifie que c'est la dernière vidéo de la liste
                                         // Rappel : 'video-last' est utilisé pour gérer la fin du carrousel de vidéos, en réinitialisant le carrousel à la première vidéo
                                     }
                                     onPlay={() => { // Met à jour l'état lorsque la vidéo commence à jouer / DETAIL EN MEMO
