@@ -51,7 +51,6 @@ const Model = () => {
                 <div className='flex flex-col items-center mt-5'> {/* conteneur pour le telephone */}
                     <div className='w-full h-[75vh] md:h-[90vh] overflow-hidden relative'>
                         <ModelView
-                            // Ce modèle est universel :
                             index={1}
                             groupRef={small}
                             gsapType="view1"
@@ -61,7 +60,6 @@ const Model = () => {
                             size={size}
                         />
                         <ModelView
-                            // Ce modèle est universel :
                             index={2}
                             groupRef={large}
                             gsapType="view2"
@@ -71,7 +69,7 @@ const Model = () => {
                             size={size}
                         />
 
-                        <Canvas
+                        <Canvas // vient de React three fiber : conteneur pour la scène 3D. initialise automatiquement une scène 3D, une caméra et un renderer WebGL.
                             className='w-full h-full'
                             style={{
                                 position: 'fixed',
@@ -83,7 +81,7 @@ const Model = () => {
                             }}
                             eventSource={document.getElementById('root')} // pour interagir avec le modèle sur lequel on travaille
                         >
-                            <View.Port /> {/* permet d'afficher plusieurs vues d'un modèle dans le même canvas, donc d'animer le modèle */}
+                            <View.Port /> {/* <View> permet d'afficher plusieurs vues d'un modèle dans le même canvas, donc d'animer le modèle. Vient de react three drei, à utiliser avec .Port quand c'est placé dans un canvas. */}
                         </Canvas>
                     </div>
                     <div className='mx-auto w-full'>
