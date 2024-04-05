@@ -34,7 +34,7 @@ const ModelView = ({ index, groupRef, gsapType, controlRef, setRotationState, si
                 ref={groupRef}
                 name={index === 1 ? 'small' : 'large'}
                 position={[0, 0, 0]} // la position permet de centrer l'iphone */}
-            > 
+            >
 
                 <Suspense fallback={<Html>Loading</Html>}> {/* Suspense enveloppe les composants qui chargent des données de manière asynchrone. 
                 L'attribut fallback spécifie un contenu React temporaire à afficher pendant que le chargement est en cours, avant que le rendu du composant ou des composants enfants n'ait lieu. 
