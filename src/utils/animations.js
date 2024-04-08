@@ -3,7 +3,7 @@ import gsap from "gsap"
 import { ScrollTrigger } from "gsap/all"
 gsap.registerPlugin(ScrollTrigger);
 
-export const animateWithGsap = (target, animationProps, scrollProps) => { // on défini une méthode comme en PHP, pour éviter d'avoir à répéter le code du ScrollTrigger dans chacune de nos animations (concept du DRY)
+export const animateWithGsap = (target, animationProps, scrollProps) => { // on défini la fonction comme une méthode en PHP, pour éviter d'avoir à répéter le code du ScrollTrigger dans chacune de nos animations (concept du DRY)
 // target est l'élément animé, 
 // animationProps est un objet contenant les propriétés d'animation telles que duration, ease, et les propriétés CSS à animer,
 // scrollProps est un objet contenant des propriétés pour contrôler l'animation en relation avec le défilement de la page en utilisant le plugin ScrollTrigger de GSAP.
