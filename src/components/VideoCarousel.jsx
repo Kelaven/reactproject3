@@ -33,7 +33,6 @@ const VideoCarousel = () => {
 
 
 
-
     ////////////////// ! ANIMATIONS GSAP ! //////////////////
 
     useGSAP(() => {
@@ -121,14 +120,17 @@ const VideoCarousel = () => {
                 anim.restart(); // réinitialiser l'état de l'animation lorsque l'utilisateur revient à la 1ere vidéo après avoir navigué dans le carousel
             }
 
+            // mettre à jour la barre de progression
             const animUpdate = () => {
-                anim.progress(
-                    videoRef.current[videoId].currentTime /
-                    hightlightsSlides[videoId].videoDuration
-                ) // La méthode .currentTime est une propriété des éléments HTML <video> et <audio> dans le DOM HTML5. Elle est utilisée pour obtenir ou définir la position de lecture actuelle dans la vidéo ou l'audio, exprimée en secondes.
-                // Fonction de mise à jour pour l'animation qui ajuste la progression de l'animation (anim.progress) 
-                // basée sur le ratio du temps actuel de lecture de la vidéo (currentTime) par rapport à la durée totale de la vidéo (videoDuration). 
-                // Cela permet de synchroniser l'animation avec la lecture de la vidéo, en faisant en sorte que la progression de l'animation reflète le pourcentage de la vidéo qui a été lu.
+                if (videoRef.current[videoId]) { // si la vidéo n'est pas null (pour accéder à currentTime en toute sécurité)
+                    anim.progress(
+                        videoRef.current[videoId].currentTime /
+                        hightlightsSlides[videoId].videoDuration
+                    ) // La méthode .currentTime est une propriété des éléments HTML <video> et <audio> dans le DOM HTML5. Elle est utilisée pour obtenir ou définir la position de lecture actuelle dans la vidéo ou l'audio, exprimée en secondes.
+                    // Fonction de mise à jour pour l'animation qui ajuste la progression de l'animation (anim.progress) 
+                    // basée sur le ratio du temps actuel de lecture de la vidéo (currentTime) par rapport à la durée totale de la vidéo (videoDuration). 
+                    // Cela permet de synchroniser l'animation avec la lecture de la vidéo, en faisant en sorte que la progression de l'animation reflète le pourcentage de la vidéo qui a été lu.
+                }
             }
 
             if (isPlaying) {
