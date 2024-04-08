@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import ModelView from './ModelView';
@@ -8,6 +8,7 @@ import { View } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { models } from '../constants';
 import { sizes } from '../constants';
+import { animateWithGsapTimeline } from '../utils/animations';
 
 const Model = () => {
 
@@ -32,6 +33,30 @@ const Model = () => {
     // rotation :
     const [smallRotation, setSmallRotation] = useState(0);
     const [largeRotation, setLargeRotation] = useState(0);
+
+    // switcher entre le petit et le grand iPhone (création du fichier animations.js qui contient la logique) : 
+    const tl = gsap.timeline();
+
+    useEffect(() => {
+        if (size === 'large') {
+            animateWithGsapTimeline(tl, small, smallRotation, '#view1', '#view2', {  // on passe des props à la fonction (la timeline elle-même etc.)
+                transform: 'translateX(-100%)',
+                duration: 2
+            })
+        }
+
+        if (size === 'small') {
+            animateWithGsapTimeline(tl, large, largeRotation, '#view2', '#view1', {
+                transform: 'translateX(0)',
+                duration: 2
+            })
+        }
+
+        return () => {
+            
+        }
+    }, [size])
+
 
     useGSAP(() => {
         gsap.to('#heading', {
@@ -81,7 +106,8 @@ const Model = () => {
                             }}
                             eventSource={document.getElementById('root')} // pour interagir avec le modèle sur lequel on travaille
                         >
-                            <View.Port /> {/* <View> permet d'afficher plusieurs vues d'un modèle dans le même canvas, donc d'animer le modèle. Vient de react three drei, à utiliser avec .Port quand c'est placé dans un canvas. */}
+                            <View.Port /> 
+                            {/* <View> permet d'afficher plusieurs vues d'un modèle dans le même canvas, donc d'animer le modèle. Vient de react three drei, à utiliser avec .Port quand c'est placé dans un canvas. */}
                         </Canvas>
                     </div>
                     <div className='mx-auto w-full'>
