@@ -20,12 +20,23 @@ const HowItWorks = () => {
             ease: 'power1.inOut'
         });
 
-        animateWithGsap('.g_fadeIn', {
+        // animateWithGsap('.g_fadeIn', {
+        //     opacity: 1,
+        //     y: 0,
+        //     duration: 1,
+        //     ease: 'power2.inOut'
+        // })
+
+        gsap.to('.g_fadeIn', {
+            scrollTrigger: {
+                trigger: '.g_fadeIn',
+                start: 'top'
+            },
             opacity: 1,
             y: 0,
             duration: 1,
             ease: 'power2.inOut'
-        })
+        });
 
     }, []);
 
