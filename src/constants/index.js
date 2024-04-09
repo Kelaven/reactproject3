@@ -79,9 +79,10 @@ export const sizes = [
 ];
 
 export const footerLinks = [
-    "Privacy Policy",
-    "Terms of Use",
-    "Sales Policy",
-    "Legal",
-    "Site Map",
+    "Engagement de confidentialité",
+    "Utilisation des cookies",
+    "Conditions d’utilisation",
+    "Ventes et remboursements",
+    "Mentions légales",
+    "Plan du site"
 ];
