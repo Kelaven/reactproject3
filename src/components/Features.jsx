@@ -9,13 +9,27 @@ const Features = () => {
     const videoRef = useRef();
 
     useGSAP(() => {
+        animateWithGsap('#exploreVideo', {
+            scrollTrigger: {
+                trigger: '#exploreVideo',
+                toggleActions: 'play pause reverse restart',
+                start: '-10% bottom',
+            },
+            onComplete: () => { // relancer quand la vidéo est terminée
+                videoRef.current.play(); // on selectionne la vidéo grâce au useRef, donc on utilise videoRef.current.fonction
+            }
+        })
+
         animateWithGsap('#features_title', { y: 0, opacity: 1 }) // fonction conçue dans animations.js
 
-        animateWithGsap(
-            '.g_grow',
+        animateWithGsap('.g_grow',
             { scale: 1, opacity: 1, ease: 'power1' },
             { scrub: 5.5 } // utilisé pour créer des animations de défilement lisse ("smooth scrolling animations", scrollTrigger)
             // Lorsque l'on utilise l'option scrub, cela permet à l'animation de suivre le défilement de la page, au lieu de se jouer une seule fois lorsqu'un point spécifique est atteint.
+        )
+
+        animateWithGsap('.g_text',
+            { y: 0, opacity: 1, ease: 'power2.inOut', duration: 1 }
         )
 
     }, []);
@@ -33,7 +47,8 @@ const Features = () => {
                 </div>
 
                 <div className='flex flex-col justify-center items-center overflow-hidden'>
-                    <div className='mt-32 mb-24 pl-24'>
+                    <div className='mt-32 mb-24'>
+                        {/* <div className='mt-32 mb-24 pl-24'> */}
                         <h2 className='text-5xl lg:text-7xl font-semibold'>iPhone.</h2>
                         <h2 className='text-5xl lg:text-7xl font-semibold'>Taillé dans le titane.</h2>
                     </div>
@@ -57,11 +72,31 @@ const Features = () => {
                                     <img src={explore2Img} alt="titane2" className='feature-video g_grow' />
                                 </div>
                             </div>
-                        </div>
 
+                            <div>
+                                <div className='feature-text-container'>
+                                    <div className='flex-1 flex-center'>
+                                        <p className='feature-text g_text text-justify'>
+                                            L'iPhone 15 Pro est {''}
+                                            <span className='text-white'>
+                                                le premier iPhone avec un design en titane de qualité aérospatiale
+                                            </span>
+                                            , conçu à partir du même alliage que les véhicules d’exploration envoyés en mission sur Mars.
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className='feature-text g_text text-justify'>
+                                            Le titane est l’un des métaux offrant le meilleur ratio résistance/poids, ce qui nous a permis de créer nos
+                                            <span className='text-white'> modèles pro les plus légers à ce jour
+                                            </span>
+                                            . Vous sentirez tout de suite la différence.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
             </div>
         </section>
     )
